@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BITH – Programación de Clases</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1A1033;
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+/* ════════════════════════════════
+   APP HEADER
+════════════════════════════════ */
+.app-header {
+  background: linear-gradient(145deg, #3B0764, #6B21A8, #8B3CF7);
+  padding: 26px 20px 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.app-header::before {
+  content:''; position:absolute; top:-50px; right:-40px;
+  width:180px; height:180px; border-radius:50%;
+  background:rgba(255,255,255,0.05);
+}
+.app-header::after {
+  content:''; position:absolute; bottom:-40px; left:-30px;
+  width:140px; height:140px; border-radius:50%;
+  background:rgba(255,255,255,0.04);
+}
+.logo-wrap { display:inline-flex; flex-direction:column; align-items:center; gap:5px; position:relative; z-index:1; }
+
+/* BITH logo — letras todas igual de visibles, la I es delgada naturalmente en bold sans-serif */
+.logo-text {
+  font-size: 46px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 4px;
+  line-height: 1;
+  font-style: normal;
+}
+.logo-tag { font-size:9.5px; letter-spacing:4px; color:rgba(255,255,255,.68); font-weight:500; text-transform:uppercase; }
+.app-subtitle { color:rgba(255,255,255,.45); font-size:12px; margin-top:10px; }
+
+/* ════════════════════════════════
+   LAYOUT
+════════════════════════════════ */
+.container { max-width:480px; margin:0 auto; padding:16px 14px; }
+
+/* ════════════════════════════════
+   FORM CARDS
+════════════════════════════════ */
+.card {
+  background:white; border-radius:18px; padding:20px 18px; margin-bottom:14px;
+  box-shadow:0 4px 20px rgba(0,0,0,.3); border:1px solid rgba(255,255,255,.06);
+}
+.sec-title {
+  font-size:11px; font-weight:700; color:#7C3AED; text-transform:uppercase;
+  letter-spacing:1.2px; margin-bottom:16px; display:flex; align-items:center; gap:6px;
+}
+.sec-title::after { content:''; flex:1; height:1px; background:linear-gradient(to right,#EDE9FE,transparent); }
+
+.form-group { margin-bottom:14px; }
+.form-group:last-child { margin-bottom:0; }
+label { display:block; font-size:12px; font-weight:600; color:#4B5563; margin-bottom:6px; }
+
+input[type="text"], input[type="date"] {
+  width:100%; padding:13px 14px; border:1.5px solid #E5E7EB; border-radius:12px;
+  font-size:15px; color:#111827; background:#FAFAFA;
+  -webkit-appearance:none; appearance:none; transition:border-color .15s, background .15s;
+  font-family:inherit;
+}
+input:focus { outline:none; border-color:#7C3AED; background:white; box-shadow:0 0 0 3px rgba(124,58,237,.08); }
+input::placeholder { color:#9CA3AF; }
+
+/* ════════════════════════════════
+   PLAN BUTTONS
+════════════════════════════════ */
+.plan-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:10px; }
+.plan-btn {
+  padding:13px 2px 9px; border:2px solid #E5E7EB; border-radius:12px;
+  background:#FAFAFA; font-size:12px; font-weight:700; color:#9CA3AF;
+  cursor:pointer; text-align:center; transition:all .15s; line-height:1.3; user-select:none;
+}
+.plan-btn small { display:block; font-size:9px; font-weight:500; margin-top:3px; opacity:.7; }
+.plan-btn.active { border-color:#7C3AED; background:linear-gradient(145deg,#F5F3FF,#EDE9FE); color:#5B21B6; }
+.plan-btn.active small { opacity:1; }
+.plan-badge {
+  background:#F5F3FF; color:#6D28D9; font-size:12px; font-weight:600;
+  padding:7px 12px; border-radius:20px; border:1px solid #EDE9FE;
+  text-align:center; width:100%; display:block; margin-top:10px;
+}
+
+/* ════════════════════════════════
+   DAY CHIPS — sin números, solo abreviatura
+════════════════════════════════ */
+.days-hdr { font-size:12px; font-weight:600; color:#4B5563; margin-bottom:10px; }
+.days-hint { font-weight:400; color:#9CA3AF; margin-left:4px; }
+.days-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-bottom:12px; }
+.day-chip {
+  padding:12px 2px; border:2px solid #E5E7EB; border-radius:11px;
+  background:#FAFAFA; font-size:11px; font-weight:700; color:#9CA3AF;
+  cursor:pointer; text-align:center; transition:all .15s; user-select:none;
+  line-height:1;
+}
+.day-chip.sel { border-color:#7C3AED; background:linear-gradient(145deg,#F5F3FF,#EDE9FE); color:#5B21B6; }
+
+/* TIME ROWS */
+#time-pickers { display:flex; flex-direction:column; gap:8px; }
+.time-row {
+  display:flex; align-items:center; gap:12px;
+  padding:11px 14px; background:#F5F3FF; border-radius:12px; border:1px solid #EDE9FE;
+  animation:fadeSlide .2s ease;
+}
+@keyframes fadeSlide { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+.time-row .tlabel { flex:1; font-size:13px; font-weight:600; color:#5B21B6; }
+.time-row input[type="time"] {
+  width:115px; padding:9px 10px; border:1.5px solid #DDD6FE; border-radius:9px;
+  font-size:14px; color:#111827; background:white;
+  -webkit-appearance:none; appearance:none; font-family:inherit;
+}
+.time-row input[type="time"]:focus { outline:none; border-color:#7C3AED; }
+
+/* ════════════════════════════════
+   BUTTONS
+════════════════════════════════ */
+.btn-gen {
+  width:100%; padding:17px; background:linear-gradient(135deg,#5B21B6,#7C3AED);
+  color:white; border:none; border-radius:14px; font-size:16px; font-weight:700;
+  cursor:pointer; box-shadow:0 4px 16px rgba(107,33,168,.45);
+  display:flex; align-items:center; justify-content:center; gap:8px; transition:opacity .15s;
+}
+.btn-gen:active { opacity:.9; }
+
+.btn-capture {
+  width:100%; padding:17px; background:linear-gradient(135deg,#5B21B6,#7C3AED);
+  color:white; border:none; border-radius:14px; font-size:16px; font-weight:700;
+  cursor:pointer; box-shadow:0 4px 16px rgba(107,33,168,.45);
+  display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px;
+}
+.btn-capture.busy { opacity:.6; pointer-events:none; }
+
+.btn-back {
+  width:100%; padding:14px; background:rgba(255,255,255,.08); color:rgba(255,255,255,.8);
+  border:1.5px solid rgba(255,255,255,.15); border-radius:14px; font-size:15px; font-weight:600;
+  cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;
+}
+
+/* ════════════════════════════════
+   ERROR
+════════════════════════════════ */
+.err-box {
+  background:#FEF2F2; border:1px solid #FCA5A5; border-radius:12px;
+  padding:12px 14px; color:#DC2626; font-size:13px; margin-top:10px;
+  display:none; line-height:1.55;
+}
+
+/* ════════════════════════════════
+   SCHEDULE CARD (la imagen)
+════════════════════════════════ */
+.card-hint {
+  font-size:11px; color:rgba(255,255,255,.5); text-align:center; margin-bottom:10px;
+  padding:6px 12px; border-radius:20px; display:block; width:100%;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1);
+}
+
+#schedule-card {
+  background:white; border-radius:20px; overflow:hidden;
+  box-shadow:0 8px 40px rgba(0,0,0,.5);
+  font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin-bottom:16px;
+}
+
+/* Card header */
+.sc-hdr {
+  background:linear-gradient(145deg,#3B0764,#6B21A8);
+  padding:22px 20px 18px; text-align:center; color:white;
+}
+/* Logo dentro de la tarjeta — BITH en bold, la I es naturalmente delgada en sans-serif */
+.sc-logo {
+  font-size:40px; font-weight:900; color:#ffffff;
+  letter-spacing:4px; line-height:1; margin-bottom:4px;
+}
+.sc-tag { font-size:9px; letter-spacing:4px; color:rgba(255,255,255,.62); font-weight:500; text-transform:uppercase; margin-bottom:10px; }
+.sc-sep { width:36px; height:2px; background:rgba(255,255,255,.22); margin:10px auto; }
+.sc-title { font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.8); }
+
+/* Card info */
+.sc-info { background:#F5F3FF; padding:14px 20px; border-bottom:1px solid #EDE9FE; }
+.sc-row {
+  display:flex; align-items:flex-start; gap:7px;
+  font-size:13px; margin-bottom:7px; line-height:1.4;
+}
+.sc-row:last-child { margin-bottom:0; }
+.sc-ico { font-size:13px; flex-shrink:0; margin-top:1px; }
+.sc-lbl { font-weight:700; color:#5B21B6; min-width:62px; }
+.sc-val { color:#111827; font-weight:500; }
+
+/* Card body */
+.sc-body { padding:16px 20px; }
+.sc-sched-title {
+  font-size:11px; font-weight:800; color:#7C3AED; letter-spacing:1.5px;
+  text-transform:uppercase; margin-bottom:14px;
+  padding-bottom:8px; border-bottom:1px solid #F3F4F6;
+}
+.sc-week { margin-bottom:12px; }
+.sc-week:last-child { margin-bottom:0; }
+.sc-wk-title {
+  font-size:12px; font-weight:800; color:#5B21B6; margin-bottom:6px;
+  padding-left:9px; border-left:3px solid #7C3AED;
+}
+.sc-dates { padding-left:12px; }
+.sc-date-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:5px 0; border-bottom:1px solid #F3F4F6;
+}
+.sc-date-row:last-child { border-bottom:none; }
+.sc-date-name { font-size:13px; color:#111827; font-weight:500; }
+.sc-date-time { font-size:12px; color:#7C3AED; font-weight:600; }
+
+.edit-btn {
+  background:#EDE9FE; border:none; border-radius:20px; padding:4px 9px;
+  font-size:11px; color:#6D28D9; font-weight:600; cursor:pointer; white-space:nowrap; flex-shrink:0;
+}
+.edit-btn:active { background:#DDD6FE; }
+#schedule-card[data-mode="cap"] .edit-btn { display:none !important; }
+#schedule-card[data-mode="cap"] .sc-date-row { border-bottom-color:#F9F9F9; }
+
+/* Card repos */
+.sc-repos {
+  background:#F0FDF4; padding:13px 20px;
+  border-top:1px solid #EDE9FE; border-bottom:1px solid #EDE9FE;
+}
+.sc-repos-lbl { font-size:12px; font-weight:700; color:#059669; margin-bottom:3px; }
+.sc-repos-val { font-size:13px; color:#374151; font-weight:500; }
+
+/* Card footer — mensaje importante, destacado con fondo oscuro */
+.sc-footer {
+  padding:18px 20px;
+  background:#3B0764;
+  color:#ffffff;
+  font-size:13px;
+  font-weight:700;
+  font-style:normal;
+  line-height:1.7;
+  text-align:center;
+  letter-spacing:0.2px;
+}
+.sc-footer span {
+  display:block;
+  margin-top:4px;
+  color:#DDD6FE;
+  font-weight:600;
+  font-size:12px;
+}
+
+/* ════════════════════════════════
+   MODALS
+════════════════════════════════ */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,.65);
+  display:flex; align-items:flex-end; justify-content:center;
+  z-index:200; visibility:hidden; opacity:0; transition:opacity .2s, visibility .2s;
+}
+.modal-overlay.open { visibility:visible; opacity:1; }
+.modal {
+  background:white; border-radius:22px 22px 0 0; padding:22px 20px 36px;
+  width:100%; max-width:480px;
+  transform:translateY(100%); transition:transform .25s cubic-bezier(.4,0,.2,1);
+}
+.modal-overlay.open .modal { transform:translateY(0); }
+.modal-handle { width:40px; height:4px; background:#E5E7EB; border-radius:2px; margin:0 auto 18px; }
+.modal-title { font-size:16px; font-weight:700; color:#111827; margin-bottom:16px; }
+.modal-acts { display:flex; flex-direction:column; gap:10px; margin-top:14px; }
+.modal-acts-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+.mbtn-save   { padding:14px; background:linear-gradient(135deg,#5B21B6,#7C3AED); color:white; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; }
+.mbtn-cancel { padding:14px; background:#F3F4F6; color:#6B7280; border:none; border-radius:12px; font-size:15px; font-weight:600; cursor:pointer; }
+.mbtn-share  { padding:14px; background:#25D366; color:white; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+.mbtn-dl     { padding:14px; background:#0088CC; color:white; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+
+#preview-img { width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,.15); margin-bottom:8px; }
+.img-hint { font-size:12px; color:#6B7280; text-align:center; margin-bottom:4px; }
+.img-edit-note { font-size:11px; color:#9CA3AF; text-align:center; }
+
+/* ════════════════════════════════
+   TOAST
+════════════════════════════════ */
+.toast {
+  position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(70px);
+  background:#1F2937; color:white; padding:11px 20px; border-radius:30px;
+  font-size:13px; font-weight:600; z-index:500; white-space:nowrap;
+  transition:transform .3s, opacity .3s; opacity:0; pointer-events:none;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+}
+.toast.on { transform:translateX(-50%) translateY(0); opacity:1; }
+
+.hidden { display:none !important; }
+</style>
+</head>
+<body>
+
+<!-- ════════════ APP HEADER ════════════ -->
+<div class="app-header">
+  <div class="logo-wrap">
+    <div class="logo-text">BITH</div>
+    <div class="logo-tag">Talento a tu hogar</div>
+  </div>
+  <div class="app-subtitle">Generador de programación de clases</div>
+</div>
+
+<div class="container">
+
+<!-- ════════════ FORM SECTION ════════════ -->
+<div id="form-section">
+
+  <div class="card">
+    <div class="sec-title">Información general</div>
+    <div class="form-group">
+      <label>Maestro</label>
+      <input type="text" id="maestro" placeholder="Nombre completo del maestro" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>Cliente</label>
+      <input type="text" id="cliente" placeholder="Nombre del cliente" autocomplete="off">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sec-title">Plan contratado</div>
+    <div class="plan-grid">
+      <button class="plan-btn" data-plan="1" onclick="selectPlan(1)">Plan 1<small>4h/mes · 1×/sem</small></button>
+      <button class="plan-btn active" data-plan="2" onclick="selectPlan(2)">Plan 2<small>8h/mes · 2×/sem</small></button>
+      <button class="plan-btn" data-plan="3" onclick="selectPlan(3)">Plan 3<small>12h/mes · 3×/sem</small></button>
+      <button class="plan-btn" data-plan="4" onclick="selectPlan(4)">Plan 4<small>16h/mes · 4×/sem</small></button>
+    </div>
+    <span class="plan-badge" id="plan-badge">📚 8 horas al mes · 2 clases por semana</span>
+  </div>
+
+  <div class="card">
+    <div class="sec-title">Días y horarios</div>
+    <div class="days-hdr">Selecciona los días <span class="days-hint" id="days-hint">(elige 2)</span></div>
+    <div class="days-grid" id="days-grid"><!-- JS renders --></div>
+    <div id="time-pickers"><!-- JS renders --></div>
+  </div>
+
+  <div class="card">
+    <div class="sec-title">Inicio del ciclo</div>
+    <div class="form-group">
+      <label>Fecha de la primera clase</label>
+      <input type="date" id="fecha-inicio">
+    </div>
+  </div>
+
+  <button class="btn-gen" onclick="generate()">📅 Generar programación</button>
+  <div class="err-box" id="err-box"></div>
+
+</div><!-- /form-section -->
+
+
+<!-- ════════════ RESULT SECTION ════════════ -->
+<div id="result-section" class="hidden">
+
+  <span class="card-hint">✏️ Toca una fecha para editarla antes de capturar</span>
+
+  <!-- ══ THE SCHEDULE CARD ══ -->
+  <div id="schedule-card" data-mode="edit">
+
+    <div class="sc-hdr">
+      <div class="sc-logo">BITH</div>
+      <div class="sc-tag">Talento a tu hogar</div>
+      <div class="sc-sep"></div>
+      <div class="sc-title">Programación de Clases</div>
+    </div>
+
+    <div class="sc-info">
+      <div class="sc-row"><span class="sc-ico">👤</span><span class="sc-lbl">Maestro:</span><span class="sc-val" id="c-maestro"></span></div>
+      <div class="sc-row"><span class="sc-ico">👥</span><span class="sc-lbl">Clientes:</span><span class="sc-val" id="c-cliente"></span></div>
+      <div class="sc-row"><span class="sc-ico">📆</span><span class="sc-lbl">Ciclo:</span><span class="sc-val" id="c-ciclo"></span></div>
+      <div class="sc-row"><span class="sc-ico">📋</span><span class="sc-lbl">Plan:</span><span class="sc-val" id="c-plan"></span></div>
+    </div>
+
+    <div class="sc-body">
+      <div class="sc-sched-title">📅 Clases programadas</div>
+      <div id="c-weeks"></div>
+    </div>
+
+    <div class="sc-repos">
+      <div class="sc-repos-lbl">🔄 Período para reposiciones</div>
+      <div class="sc-repos-val" id="c-repos"></div>
+    </div>
+
+    <div class="sc-footer">
+      Finalizado el periodo contratado previamente indicado, se dará inicio a un nuevo mes de clases.
+      <span>¡Estamos para servirles siempre!</span>
+    </div>
+
+  </div><!-- /schedule-card -->
+
+  <button class="btn-capture" id="capture-btn" onclick="captureCard()">
+    📸 Guardar como imagen
+  </button>
+  <button class="btn-back" onclick="goBack()">
+    ← Editar datos
+  </button>
+
+</div><!-- /result-section -->
+
+</div><!-- /container -->
+
+
+<!-- ════════════ IMAGE MODAL ════════════ -->
+<div class="modal-overlay" id="img-modal" onclick="closeMifBg(event,'img-modal')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📸 Imagen lista</div>
+    <img id="preview-img" src="" alt="Programación">
+    <p class="img-hint">Mantén presionada la imagen para guardarla en tu galería</p>
+    <p class="img-edit-note">Cierra este panel si quieres seguir editando fechas</p>
+    <div class="modal-acts">
+      <button class="mbtn-share" id="share-btn" onclick="shareImg()">🚀 Compartir imagen</button>
+      <button class="mbtn-dl" onclick="dlImg()">⬇️ Descargar imagen</button>
+      <button class="mbtn-cancel" onclick="closeM('img-modal')">Cerrar y seguir editando</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════ DATE EDIT MODAL ════════════ -->
+<div class="modal-overlay" id="date-modal" onclick="closeMifBg(event,'date-modal')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✏️ Editar fecha</div>
+    <div class="form-group">
+      <label id="dm-label">Semana 1 – Clase 1</label>
+      <input type="date" id="dm-input"
+        style="width:100%;padding:13px 14px;border:1.5px solid #E5E7EB;border-radius:12px;
+               font-size:15px;background:#FAFAFA;color:#111827;-webkit-appearance:none;
+               appearance:none;font-family:inherit;">
+    </div>
+    <div class="modal-acts-2">
+      <button class="mbtn-cancel" onclick="closeM('date-modal')">Cancelar</button>
+      <button class="mbtn-save" onclick="saveDate()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+/* ═══════════════════════════════════════
+   CONSTANTS
+═══════════════════════════════════════ */
+const DAYS = [
+  {n:1, ab:'Lun', full:'Lunes'},
+  {n:2, ab:'Mar', full:'Martes'},
+  {n:3, ab:'Mié', full:'Miércoles'},
+  {n:4, ab:'Jue', full:'Jueves'},
+  {n:5, ab:'Vie', full:'Viernes'},
+  {n:6, ab:'Sáb', full:'Sábado'},
+  {n:7, ab:'Dom', full:'Domingo'},
+];
+const MONTHS = ['enero','febrero','marzo','abril','mayo','junio',
+                'julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const PLAN_LBL = {
+  1:'📚 4 horas al mes · 1 clase por semana',
+  2:'📚 8 horas al mes · 2 clases por semana',
+  3:'📚 12 horas al mes · 3 clases por semana',
+  4:'📚 16 horas al mes · 4 clases por semana',
+};
+
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+let plan       = 2;
+let selDays    = new Set();
+let dayTimes   = {};          // { dayNum: "HH:MM" }
+let classDates = [];          // [ [Date, ...] × 4 ]
+let sched      = {};
+let editTgt    = null;
+let captBlob   = null;
+
+/* ═══════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════ */
+function pad(n) { return String(n).padStart(2,'0'); }
+
+// Recibe un objeto Date, devuelve 1=Lun … 7=Dom
+function dow(date) {
+  const d = date.getDay();
+  return d === 0 ? 7 : d;
+}
+
+function parseL(s) {
+  const [y, m, d] = s.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function toISO(date) {
+  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`;
+}
+
+function fmtDate(date) {
+  return `${DAYS[dow(date)-1].full} ${date.getDate()} de ${MONTHS[date.getMonth()]}`;
+}
+
+function fmtTime(t) {
+  const [h, m] = t.split(':').map(Number);
+  return `${h % 12 || 12}:${pad(m)} ${h >= 12 ? 'pm' : 'am'}`;
+}
+
+/* ═══════════════════════════════════════
+   PLAN
+═══════════════════════════════════════ */
+function selectPlan(n) {
+  plan = n;
+  document.querySelectorAll('.plan-btn').forEach(b => b.classList.toggle('active', +b.dataset.plan === n));
+  document.getElementById('plan-badge').textContent = PLAN_LBL[n];
+  document.getElementById('days-hint').textContent  = `(elige ${n})`;
+  if (selDays.size > n) {
+    [...selDays].slice(n).forEach(d => { selDays.delete(d); delete dayTimes[d]; });
+    renderChips();
+    renderTimes();
+  }
+}
+
+/* ═══════════════════════════════════════
+   DAY CHIPS (sin números abajo)
+═══════════════════════════════════════ */
+function initChips() {
+  const g = document.getElementById('days-grid');
+  g.innerHTML = '';
+  DAYS.forEach(d => {
+    const b = document.createElement('button');
+    b.className = 'day-chip';
+    b.id = `chip-${d.n}`;
+    b.textContent = d.ab;        // solo la abreviatura, sin número
+    b.onclick = () => toggleDay(d.n);
+    g.appendChild(b);
+  });
+}
+
+function toggleDay(dn) {
+  if (selDays.has(dn)) {
+    selDays.delete(dn);
+    delete dayTimes[dn];
+  } else {
+    if (selDays.size >= plan) { showToast(`Solo puedes elegir ${plan} día(s) para el Plan ${plan}`); return; }
+    selDays.add(dn);
+  }
+  renderChips();
+  renderTimes();
+}
+
+function renderChips() {
+  DAYS.forEach(d => document.getElementById(`chip-${d.n}`).classList.toggle('sel', selDays.has(d.n)));
+}
+
+function renderTimes() {
+  // Guardar valores actuales antes de limpiar
+  [...selDays].forEach(n => {
+    const el = document.getElementById(`tp-${n}`);
+    if (el) dayTimes[n] = el.value;
+  });
+  const c = document.getElementById('time-pickers');
+  c.innerHTML = '';
+  [...selDays].sort((a, b) => a - b).forEach(dn => {
+    const day = DAYS[dn - 1];
+    const row = document.createElement('div');
+    row.className = 'time-row';
+    row.innerHTML = `<span class="tlabel">⏰ ${day.full}</span>
+      <input type="time" id="tp-${dn}" value="${dayTimes[dn] || ''}">`;
+    c.appendChild(row);
+  });
+}
+
+/* ═══════════════════════════════════════
+   DATE GENERATION
+═══════════════════════════════════════ */
+function genDates(firstStr, days) {
+  const sorted = [...days].sort((a, b) => a - b);
+  const first  = parseL(firstStr);
+  const idx    = sorted.indexOf(dow(first));
+  if (idx === -1) return null;
+
+  const total = sorted.length * 4;
+  const all   = [new Date(first)];
+  let i = idx;
+
+  while (all.length < total) {
+    const ni  = (i + 1) % sorted.length;
+    const add = sorted[ni] > sorted[i]
+      ? sorted[ni] - sorted[i]
+      : 7 - sorted[i] + sorted[ni];
+    const next = new Date(all[all.length - 1]);
+    next.setDate(next.getDate() + add);
+    all.push(next);
+    i = ni;
+  }
+
+  const cpw = sorted.length;
+  return [0, 1, 2, 3].map(w => all.slice(w * cpw, (w + 1) * cpw));
+}
+
+function calcRepos(lastDate) {
+  const s = new Date(lastDate); s.setDate(s.getDate() + 2);
+  const e = new Date(s);        e.setDate(e.getDate() + 7);
+  const fmt = d => `${d.getDate()} de ${MONTHS[d.getMonth()]}`;
+  const y = e.getFullYear();
+  return s.getMonth() === e.getMonth()
+    ? `Del ${s.getDate()} al ${e.getDate()} de ${MONTHS[e.getMonth()]} de ${y}`
+    : `Del ${fmt(s)} al ${fmt(e)} de ${y}`;
+}
+
+function buildCiclo() {
+  const f = classDates[0][0];
+  const l = classDates[3][classDates[3].length - 1];
+  const fmt = d => `${d.getDate()} de ${MONTHS[d.getMonth()]}`;
+  return f.getMonth() === l.getMonth() && f.getFullYear() === l.getFullYear()
+    ? `Del ${f.getDate()} al ${l.getDate()} de ${MONTHS[l.getMonth()]} de ${l.getFullYear()}`
+    : `Del ${fmt(f)} al ${fmt(l)} de ${l.getFullYear()}`;
+}
+
+/* ═══════════════════════════════════════
+   GENERATE
+═══════════════════════════════════════ */
+function generate() {
+  const maestro = document.getElementById('maestro').value.trim();
+  const cliente = document.getElementById('cliente').value.trim();
+  const fecha   = document.getElementById('fecha-inicio').value;
+  const eb      = document.getElementById('err-box');
+
+  // Recoger horas actuales
+  [...selDays].forEach(n => {
+    const el = document.getElementById(`tp-${n}`);
+    if (el) dayTimes[n] = el.value;
+  });
+
+  const errs = [];
+  if (!maestro) errs.push('el nombre del maestro');
+  if (!cliente) errs.push('el nombre del cliente');
+  if (!fecha)   errs.push('la fecha de la primera clase');
+  if (selDays.size < plan) errs.push(`${plan} día(s) de clase (has seleccionado ${selDays.size})`);
+  const noTime = [...selDays].find(n => !dayTimes[n]);
+  if (noTime) errs.push(`la hora para ${DAYS[noTime - 1].full}`);
+
+  if (errs.length) {
+    eb.style.display = 'block';
+    eb.innerHTML = '⚠️ Completa: ' + errs.join(', ') + '.';
+    return;
+  }
+  eb.style.display = 'none';
+
+  const weeks = genDates(fecha, [...selDays]);
+  if (!weeks) {
+    eb.style.display = 'block';
+    const first  = parseL(fecha);
+    const dn     = DAYS[dow(first) - 1].full;
+    const selN   = [...selDays].sort((a, b) => a - b).map(n => DAYS[n - 1].full).join(', ');
+    eb.innerHTML = `⚠️ La primera clase es <strong>${dn}</strong>, pero los días elegidos son <strong>${selN}</strong>. La fecha de inicio debe coincidir con uno de los días seleccionados.`;
+    return;
+  }
+
+  classDates = weeks;
+  sched = { maestro, cliente, plan };
+
+  document.getElementById('form-section').classList.add('hidden');
+  document.getElementById('result-section').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  renderCard();
+}
+
+/* ═══════════════════════════════════════
+   RENDER CARD — bug corregido: dow() recibe Date
+═══════════════════════════════════════ */
+function renderCard() {
+  const { maestro, cliente, plan: p } = sched;
+
+  document.getElementById('c-maestro').textContent = maestro;
+  document.getElementById('c-cliente').textContent = cliente;
+  document.getElementById('c-ciclo').textContent   = buildCiclo();
+  document.getElementById('c-plan').textContent    = `Plan ${p} · ${p * 4} horas al mes`;
+
+  const last = classDates[3][classDates[3].length - 1];
+  document.getElementById('c-repos').textContent = calcRepos(last);
+
+  const wc = document.getElementById('c-weeks');
+  wc.innerHTML = '';
+
+  classDates.forEach((week, wi) => {
+    const div = document.createElement('div');
+    div.className = 'sc-week';
+
+    let h = `<div class="sc-wk-title">✅ Semana ${wi + 1}</div><div class="sc-dates">`;
+    week.forEach((date, ci) => {
+      // dow() recibe el objeto Date directamente — bug corregido
+      const dayNum = dow(date);
+      const tm     = dayTimes[dayNum];
+      h += `<div class="sc-date-row">
+        <span>
+          <span class="sc-date-name">${fmtDate(date)}</span>
+          ${tm ? `<span class="sc-date-time"> · ${fmtTime(tm)}</span>` : ''}
+        </span>
+        <button class="edit-btn" onclick="openDM(${wi},${ci})">✏️ editar</button>
+      </div>`;
+    });
+    h += '</div>';
+    div.innerHTML = h;
+    wc.appendChild(div);
+  });
+}
+
+/* ═══════════════════════════════════════
+   IMAGE CAPTURE
+═══════════════════════════════════════ */
+async function captureCard() {
+  const card = document.getElementById('schedule-card');
+  const btn  = document.getElementById('capture-btn');
+
+  btn.textContent = '⏳ Generando imagen...';
+  btn.classList.add('busy');
+  card.setAttribute('data-mode', 'cap');
+
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+  try {
+    const canvas = await html2canvas(card, {
+      scale: 2.5,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+      removeContainer: true
+    });
+
+    card.setAttribute('data-mode', 'edit');
+    btn.innerHTML = '📸 Guardar como imagen';
+    btn.classList.remove('busy');
+
+    canvas.toBlob(blob => {
+      captBlob = blob;
+      const url = URL.createObjectURL(blob);
+      document.getElementById('preview-img').src = url;
+
+      const file = new File([blob], 'bith.png', { type: 'image/png' });
+      document.getElementById('share-btn').style.display =
+        (navigator.canShare && navigator.canShare({ files: [file] })) ? 'flex' : 'none';
+
+      openM('img-modal');
+    }, 'image/png');
+
+  } catch (e) {
+    card.setAttribute('data-mode', 'edit');
+    btn.innerHTML = '📸 Guardar como imagen';
+    btn.classList.remove('busy');
+    showToast('No se pudo generar la imagen. Toma una captura manual de pantalla.');
+    console.error(e);
+  }
+}
+
+async function shareImg() {
+  if (!captBlob) return;
+  const file = new File([captBlob], `BITH-${sched.cliente}.png`, { type: 'image/png' });
+  try { await navigator.share({ files: [file], title: `Programación BITH – ${sched.cliente}` }); } catch {}
+}
+
+function dlImg() {
+  if (!captBlob) return;
+  const url = URL.createObjectURL(captBlob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `BITH-${sched.cliente}.png`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+/* ═══════════════════════════════════════
+   DATE EDIT MODAL — bug corregido: dow() recibe Date
+═══════════════════════════════════════ */
+function openDM(w, c) {
+  editTgt = { w, c };
+  document.getElementById('dm-label').textContent = `Semana ${w + 1} – Clase ${c + 1}`;
+  document.getElementById('dm-input').value = toISO(classDates[w][c]);
+  openM('date-modal');
+}
+
+function saveDate() {
+  const v = document.getElementById('dm-input').value;
+  if (!v || !editTgt) { closeM('date-modal'); return; }
+
+  const { w, c } = editTgt;
+  const nd  = parseL(v);
+  const old = classDates[w][c];
+
+  // dow() recibe Date directamente — bug corregido
+  const oldN = dow(old);
+  const newN = dow(nd);
+  if (oldN !== newN && dayTimes[oldN]) dayTimes[newN] = dayTimes[oldN];
+
+  classDates[w][c] = nd;
+  closeM('date-modal');
+  renderCard();
+}
+
+/* ═══════════════════════════════════════
+   MODALS
+═══════════════════════════════════════ */
+function openM(id)  { document.getElementById(id).classList.add('open'); }
+function closeM(id) { document.getElementById(id).classList.remove('open'); }
+function closeMifBg(e, id) { if (e.target === document.getElementById(id)) closeM(id); }
+
+/* ═══════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════ */
+function goBack() {
+  document.getElementById('result-section').classList.add('hidden');
+  document.getElementById('form-section').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+let toastT;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove('on'), 3200);
+}
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+(function() {
+  document.getElementById('fecha-inicio').value = toISO(new Date());
+  initChips();
+  selectPlan(2);
+})();
+</script>
+</body>
+</html>
