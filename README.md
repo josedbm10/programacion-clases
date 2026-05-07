@@ -1,2 +1,2 @@
-# programacion-clases
+# index.html
 Clases BITH
